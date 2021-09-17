@@ -1,3 +1,13 @@
+---
+title: "Words in Guardian articles"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r include=FALSE}
 library(tidyverse) # https://www.tidyverse.org/
 # vis textbook https://clauswilke.com/dataviz/
 # wrangling for vis https://r4ds.had.co.nz/
@@ -42,9 +52,21 @@ cases %>%
   anti_join(stop_words) %>% 
   # add in demo
   left_join(key, by = "case")
+```
 
+## word cloud
 
-# create visualisation
+```{r}
+words %>% 
+  count(word, sort = T) %>% 
+  with(wordcloud(word, n, max.words = 25))
+
+```
+
+## bar chart of freq
+
+```{r}
+
 words %>% 
   count(word, sort = T) %>% 
   head(25) %>% 
@@ -56,20 +78,16 @@ words %>%
     title = "Most common words in dv reporting in The Guardian"
   )
 
+```
+
+## tabulation of first 10 words freq
+
+```{r}
 
 words %>% 
   count(word, sort = T) %>% 
-  with(wordcloud(word, n, max.words = 25))
-
-library(gt)
-
-words %>% 
-  count(word, sort = T) %>% 
-  head(25) %>% 
+  head(10) %>% 
   gt()
 
-
-
-
-
+```
 
