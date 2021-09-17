@@ -1,0 +1,64 @@
+library(tidyverse) # https://www.tidyverse.org/
+# vis textbook https://clauswilke.com/dataviz/
+# wrangling for vis https://r4ds.had.co.nz/
+library(tidytext) # working with text in R https://www.tidytextmining.com
+# press shift and mouse over url then click to open link
+
+
+# read in key
+key <- 
+  read_csv("cases/Casekey.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    case = row_number()
+  )
+
+# read in case text
+case_text <- 
+  list.files("cases", "*.txt", full.names = TRUE) %>% 
+    map_chr(read_file)
+
+
+# set up table of text
+cases <- 
+tibble(
+  case_text = case_text
+) %>% 
+  mutate(
+    case = row_number()
+  ) 
+
+# get stop words
+data(stop_words)
+
+# table of words
+words <- 
+cases %>% 
+  # turn into words
+  unnest_tokens(word, case_text) %>% 
+  # remove stopwords
+  anti_join(stop_words) %>% 
+  # add in demo
+  left_join(key, by = "case")
+
+
+# create visualisation
+words %>% 
+  count(word, sort = T) %>% 
+  head(25) %>% 
+  mutate(word = reorder(word,n)) %>% 
+  ggplot(aes(x = n, y = word))  + 
+  geom_col() +
+  ggthemes::theme_tufte() +
+  labs(
+    title = "Most common words in dv reporting in The Guardian"
+  )
+
+
+
+
+
+
+
+
+
